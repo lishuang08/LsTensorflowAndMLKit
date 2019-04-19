@@ -1,0 +1,189 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
+apply plugin: 'com.google.firebase.firebase-perf'
+
+android {
+    compileSdkVersion 'android-Q'
+    defaultConfig {
+        applicationId "ls.yylx.lstensorflowandmlkit"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++14"
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            ndk{
+//                abiFilters 'arm64-v8a',"armeabi-v7a"
+//            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+
+    buildToolsVersion = '28.0.3'
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+    /**加快编译速度*/
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("lint")
+                //如果instant run不生效，把clean这行干掉
+                || task.name.equals("clean")
+                //项目中有用到aidl则不可以舍弃这个任务
+                || task.name.contains("Aidl")
+                //用不到测试的时候就可以先关闭
+                || task.name.contains("mockableAndroidJar")
+                || task.name.contains("UnitTest")
+                || task.name.contains("AndroidTest")
+//                //用不到NDK和JNI的也关闭掉
+//                || task.name.contains("Ndk")
+//                || task.name.contains("Jni")
+        ) {
+            task.enabled = false
+        }
+    }
+
+
+    task nativeLibsToJar(type: Jar, description: 'create a jar archive of the native libs') {
+        destinationDir file("$buildDir/native-libs")
+        baseName 'native-libs'
+        from fileTree(dir: 'libs', include: '**/*.so')
+        into 'lib/'
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+    }
+
+
+
+}
+kapt {
+    generateStubs = true
+    useBuildCache = true
+
+}
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+//    最后还需要在dependencies添加
+    implementation fileTree(dir: "$buildDir/native-libs", include: 'native-libs.jar')
+
+    /**kotlin-extensions-library*/
+    implementation 'androidx.core:core-ktx:1.1.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
+    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+
+
+    implementation 'com.google.firebase:firebase-perf:16.2.4'
+    /**arch-library*/
+    /**viewmodel and livedata*/
+    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    kapt 'androidx.room:room-compiler:2.1.0-alpha04'
+
+    implementation 'androidx.paging:paging-runtime-ktx:2.1.0'
+
+    implementation 'androidx.collection:collection-ktx:1.1.0-alpha02'
+    /**fragment*/
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+    /**navigation*/
+    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
+    implementation "android.arch.navigation:navigation-fragment:$nav_version"
+    implementation "android.arch.navigation:navigation-ui:$nav_version"
+    /**workManager*/
+    implementation "android.arch.work:work-runtime-ktx:$work_version"
+    /**超快数据库，objectbox **/
+    debugImplementation "io.objectbox:objectbox-android-objectbrowser:$objectbox_version"
+    releaseImplementation "io.objectbox:objectbox-android:$objectbox_version"
+    implementation "io.objectbox:objectbox-kotlin:$objectbox_version"
+    kapt "io.objectbox:objectbox-processor:$objectbox_version"
+
+    /**net-work*/
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
+    implementation 'com.squareup.okio:okio:2.2.2'
+    /**gson*/
+    implementation 'com.google.code.gson:gson:2.8.5'
+    /**anko*/
+    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-cardview-v7:$anko_version"
+    implementation "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
+    implementation "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$anko_version"
+    implementation "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-support-v4:$anko_version"
+    implementation "org.jetbrains.anko:anko-constraint-layout:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+
+
+    /**log*/
+    implementation 'com.orhanobut:logger:2.2.0'
+
+    /**glide 图片加载库*/
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    implementation "com.github.bumptech.glide:okhttp3-integration:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
+
+    /**adapter*/
+    def brvah_version = '2.9.42'
+    implementation "com.github.CymChad:BaseRecyclerViewAdapterHelper:$brvah_version"
+
+    /**Eventbus*/
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    /**三方工具---提高效率**/
+    /**leakcanary */
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanary_version"
+    // Optional, if you use support library fragments:
+    debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:$leakcanary_version"
+    /**test*/
+    testImplementation 'junit:junit:4.13-beta-2'
+    androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+
+//    implementation 'com.google.android.gms:play-services:12.0.1'
+
+    /**ml kit */
+    implementation 'com.google.firebase:firebase-ml-vision:19.0.2'
+    implementation 'com.google.firebase:firebase-ml-vision-face-model:17.0.2'
+
+
+    /**zxing*/
+    implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.google.zxing:android-core:3.3.0'
+
+    implementation 'cn.simonlee.xcodescanner:zbar:1.1.10'
+
+}
+
+//必须在objectbrowser 之后
+apply plugin: 'io.objectbox'
+
+apply plugin: 'com.google.gms.google-services'

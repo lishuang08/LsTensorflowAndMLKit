@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/main_navigation" app:startDestination="@id/mainFragment">
+
+    <fragment android:id="@+id/mainFragment" android:name="ls.yylx.lstensorflowandmlkit.MainFragment"
+              android:label="MainFragment">
+        <action android:id="@+id/action_mainFragment_to_QRZxingFragment" app:destination="@id/QRZxingFragment"/>
+        <action android:id="@+id/action_mainFragment_to_xcodeScannerFragment"
+                app:destination="@id/xcodeScannerFragment"/>
+        <action android:id="@+id/action_mainFragment_to_mlKitFragment" app:destination="@id/mlKitFragment"/>
+    </fragment>
+    <fragment android:id="@+id/QRZxingFragment" android:name="ls.yylx.lstensorflowandmlkit.QRZxingFragment"
+              android:label="QRZxingFragment"/>
+    <fragment android:id="@+id/xcodeScannerFragment"
+              android:name="ls.yylx.lstensorflowandmlkit.XcodeScanner.XcodeScannerFragment"
+              android:label="XcodeScannerFragment"/>
+    <fragment android:id="@+id/mlKitFragment" android:name="ls.yylx.lstensorflowandmlkit.MlKit.MlKitFragment"
+              android:label="MlKitFragment"/>
+</navigation>

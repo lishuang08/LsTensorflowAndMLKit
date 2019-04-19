@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.simonlee.xcodescanner.view.MaskConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        app:frame_viewid="@id/scannerframe">
+
+    <cn.simonlee.xcodescanner.view.AdjustTextureView
+            android:id="@+id/textureview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <cn.simonlee.xcodescanner.view.ScannerFrameView
+            android:id="@+id/scannerframe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:frame_whRatio="1"
+            app:frame_widthRatio="0.7"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.33"
+            app:scan_cycle="1500"/>
+
+
+    <Button
+            android:id="@+id/btn_flash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开闪光灯"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/scannerframe"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+</cn.simonlee.xcodescanner.view.MaskConstraintLayout>
